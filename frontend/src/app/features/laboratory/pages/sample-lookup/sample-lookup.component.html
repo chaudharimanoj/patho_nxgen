@@ -1,0 +1,92 @@
+<div>
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold text-gray-900">Lookup Sample by Barcode</h1>
+    <p class="mt-2 text-sm text-gray-600">Enter a sample barcode to view its details</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSearch()" class="mb-6">
+    <div class="flex items-center gap-3 max-w-md">
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Barcode</mat-label>
+        <input matInput formControlName="barcode" id="input-lookup-barcode"
+          placeholder="Scan or enter barcode..." />
+        <mat-icon matSuffix>qr_code_scanner</mat-icon>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit"
+        [disabled]="form.invalid || sampleStore.loading()" id="btn-lookup">
+        @if (sampleStore.loading()) { <mat-spinner diameter="18" class="mr-1" /> }
+        Lookup
+      </button>
+      @if (submitted()) {
+        <button mat-icon-button type="button" (click)="clearSearch()" aria-label="Clear">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
+  </form>
+
+  <!-- Result found -->
+  @if (sampleStore.barcodeResult(); as sample) {
+    <mat-card class="max-w-2xl">
+      <mat-card-header>
+        <mat-card-title>Sample Found</mat-card-title>
+        <mat-card-subtitle>Barcode: {{ sample.barcode }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="pt-3">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="font-medium text-gray-500">Barcode</p>
+            <p class="font-mono text-gray-900">{{ sample.barcode }}</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-500">Patient ID</p>
+            <p>{{ sample.patientId }}</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-500">Test Type</p>
+            <p>{{ sample.testType }}</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-500">Status</p>
+            <p class="font-semibold" [ngClass]="statusClass(sample.status)">{{ sample.status }}</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-500">Collected By</p>
+            <p>{{ sample.collectedBy || '-' }}</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-500">Verified By</p>
+            <p>{{ sample.verifiedBy || '-' }}</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-500">Approved By</p>
+            <p>{{ sample.approvedBy || '-' }}</p>
+          </div>
+          @if (sample.rejectionReason) {
+            <div class="col-span-2">
+              <p class="font-medium text-gray-500">Rejection Reason</p>
+              <p class="text-red-600">{{ sample.rejectionReason }}</p>
+            </div>
+          }
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="viewDetails()" id="btn-view-details">
+          View Full Details
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+
+  <!-- Not found -->
+  @if (submitted() && !sampleStore.barcodeResult() && !sampleStore.loading()) {
+    <mat-card class="max-w-md border border-red-200 bg-red-50">
+      <mat-card-content class="pt-4">
+        <p class="text-red-900 font-semibold">Sample Not Found</p>
+        <p class="text-sm text-gray-700 mt-1">
+          No sample found with barcode: <code class="rounded bg-gray-200 px-1">{{ form.value.barcode }}</code>
+        </p>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

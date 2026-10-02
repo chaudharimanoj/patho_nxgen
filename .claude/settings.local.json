@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/Documents/Projects/patho-nxgen-platform/**)",
+      "Bash(docker compose *)",
+      "Bash(timeout 10 /bin/bash -c \"while ! docker compose ps | grep -q 'Up'; do sleep 1; done\")",
+      "Bash(mvn *)",
+      "Bash(java *)",
+      "Bash(nc -z localhost 5432)",
+      "Bash(docker exec *)",
+      "Bash(winpty docker *)",
+      "Bash(pkill *)",
+      "Bash(timeout 1 bash -c '</dev/tcp/localhost/5432')",
+      "Bash(psql *)",
+      "Bash(docker cp *)",
+      "Bash(docker run *)",
+      "Bash(export *)",
+      "Bash(</parameter.conf)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec patho-nxgen-postgres-1 *)",
+      "Bash(timeout 1 bash -c \"cat < /dev/null > /dev/tcp/172.19.0.2/5432\")",
+      "Bash(MSYS_NO_PATHCONV=1 docker cp *)",
+      "Bash(timeout 1 bash -c \"cat < /dev/null > /dev/tcp/localhost/5432 2>/dev/null\")",
+      "Bash(docker-compose ps *)",
+      "Bash(docker-compose up *)",
+      "Bash(DB_HOST=localhost DB_PORT=5432 DB_NAME=patho_nxgen DB_USER=patho_app DB_PASSWORD=patho_pass REDIS_HOST=localhost REDIS_PORT=6379 RABBITMQ_HOST=localhost RABBITMQ_PORT=5672 MINIO_ENDPOINT=http://localhost:9000 KEYCLOAK_ISSUER_URI=http://localhost:8081/realms/patho-platform mvn spring-boot:run *)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec *)",
+      "Bash(docker rmi patho-nxgen-backend:latest *)",
+      "Bash(docker stop *)",
+      "Bash(docker rm *)",
+      "Bash(docker-compose logs *)",
+      "Bash(PGPASSWORD=postgres docker exec *)",
+      "Bash(docker-compose down *)",
+      "Bash(docker-compose restart *)",
+      "Bash(PGPASSWORD=patho_pass docker exec *)",
+      "Bash(echo \"SET search_path TO tenant_template;\")",
+      "Bash(echo \"\\\\i /tmp/V1__init_tenant_schema.sql\")",
+      "Bash(npm install *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/)"
+    ]
+  }
+}

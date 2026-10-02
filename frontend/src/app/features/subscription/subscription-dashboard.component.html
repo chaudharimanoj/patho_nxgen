@@ -1,0 +1,270 @@
+<div class="subscription-container">
+
+  <!-- Platform Control Plane Header Bar -->
+  <div class="platform-control-bar">
+    <div class="control-label">
+      <mat-icon class="control-icon">corporate_fare</mat-icon>
+      <div>
+        <div class="platform-tag">PLATFORM CONTROL PLANE</div>
+        <div class="platform-title">Patho NXGen Platform Subscription Management</div>
+      </div>
+    </div>
+
+    <!-- Client Organization Selector Dropdown -->
+    <div class="org-selector-group" *ngIf="organizations().length > 0">
+      <label for="tenantSelect" class="selector-label">Target Laboratory Client:</label>
+      <select
+        id="tenantSelect"
+        class="org-dropdown"
+        [ngModel]="selectedTenantId()"
+        (ngModelChange)="onTenantChange($event)"
+      >
+        <option *ngFor="let org of organizations()" [value]="org.id">
+          {{ org.legalName }} ({{ org.slug }}) — {{ org.subscriptionPlan || 'STARTER' }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero-banner">
+    <div class="hero-content">
+      <div class="badge-row">
+        <span class="status-badge" [class.active]="usage()?.status === 'ACTIVE'">
+          <mat-icon>verified</mat-icon> {{ usage()?.status }} SUBSCRIPTION
+        </span>
+        <span class="scope-badge">
+          <mat-icon>{{ usage()?.branchScope === 'MULTI_BRANCH' ? 'domain' : 'store' }}</mat-icon>
+          {{ usage()?.branchScope === 'MULTI_BRANCH' ? 'Multiple Branches' : 'Single Lab' }}
+        </span>
+      </div>
+      <h1 class="hero-title">Subscription & Volume Plan</h1>
+      <p class="hero-subtitle">
+        Manage your pathology lab's subscription tier, feature access, and location-based monthly patient registration quotas.
+      </p>
+    </div>
+
+    <div class="hero-action" *ngIf="usage()">
+      <div class="plan-summary-card">
+        <div class="tier-label">{{ usage()?.planName }}</div>
+        <div class="volume-label">{{ usage()?.volumeTierName }}</div>
+        <div class="renews-info" *ngIf="usage()?.renewsAt">
+          Renews on: {{ usage()?.renewsAt | date:'mediumDate' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-state" *ngIf="loading()">
+    <mat-icon class="spin-icon">sync</mat-icon>
+    <p>Loading subscription details for selected client organization...</p>
+  </div>
+
+  <ng-container *ngIf="!loading() && usage()">
+    <!-- Patient Quota Meter Card -->
+    <div class="section-card quota-card">
+      <div class="quota-header">
+        <div class="quota-title-group">
+          <mat-icon class="quota-icon">groups</mat-icon>
+          <div>
+            <h2>Monthly Patient Volume Quota</h2>
+            <p class="quota-sub">Calculated based on registered volume tier ({{ usage()?.volumeTierName }})</p>
+          </div>
+        </div>
+        <div class="quota-number">
+          <span class="count">{{ usage()?.currentMonthPatientCount }}</span>
+          <span class="limit" *ngIf="!usage()?.isUnlimited">/ {{ usage()?.monthlyPatientLimit }}</span>
+          <span class="limit" *ngIf="usage()?.isUnlimited">/ Unlimited</span>
+          <span class="unit">patients</span>
+        </div>
+      </div>
+
+      <div class="progress-section" *ngIf="!usage()?.isUnlimited">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="usage()?.usagePercentage"
+          [class.warning]="(usage()?.usagePercentage || 0) >= 80"
+          [class.critical]="(usage()?.usagePercentage || 0) >= 100"
+        ></mat-progress-bar>
+
+        <div class="progress-labels">
+          <span>{{ usage()?.usagePercentage }}% used this month</span>
+          <span *ngIf="(usage()?.usagePercentage || 0) >= 80" class="warning-text">
+            <mat-icon inline>warning</mat-icon> Approaching quota limit. Consider upgrading.
+          </span>
+        </div>
+      </div>
+
+      <div class="unlimited-banner" *ngIf="usage()?.isUnlimited">
+        <mat-icon>all_inclusive</mat-icon>
+        <span>Metro City tier grants unlimited monthly patient registrations across all lab branches.</span>
+      </div>
+    </div>
+
+    <!-- Tier & Volume Matrix -->
+    <div class="section-card matrix-card">
+      <div class="section-header">
+        <mat-icon class="header-icon">grid_view</mat-icon>
+        <div>
+          <h2>Tier & Volume Matrix</h2>
+          <p class="sub">Select a Subscription Tier combined with a Location Volume Tier to assign or upgrade client capability.</p>
+        </div>
+      </div>
+
+      <div class="matrix-grid">
+        <!-- STARTER TIER CARD -->
+        <div
+          class="tier-column-card"
+          [class.current]="usage()?.planCode === 'STARTER'"
+          [class.selected]="selectedPlanCode() === 'STARTER'"
+          (click)="selectedPlanCode.set('STARTER')"
+        >
+          <div class="tier-card-header">
+            <div class="tier-badge">STARTER</div>
+            <h3>Single Lab</h3>
+            <p class="scope-text">Standard Module Access</p>
+          </div>
+          <ul class="feature-bullets">
+            <li><mat-icon>check_circle</mat-icon> Billing & Invoicing</li>
+            <li><mat-icon>check_circle</mat-icon> Reports & Exports</li>
+            <li><mat-icon>check_circle</mat-icon> Basic Inventory</li>
+            <li><mat-icon>check_circle</mat-icon> Patient Portal</li>
+            <li class="locked"><mat-icon>block</mat-icon> Advanced Analytics</li>
+            <li class="locked"><mat-icon>block</mat-icon> WhatsApp / SMS</li>
+          </ul>
+        </div>
+
+        <!-- PREMIUM TIER CARD -->
+        <div
+          class="tier-column-card featured"
+          [class.current]="usage()?.planCode === 'PREMIUM'"
+          [class.selected]="selectedPlanCode() === 'PREMIUM'"
+          (click)="selectedPlanCode.set('PREMIUM')"
+        >
+          <div class="popular-tag">MOST POPULAR</div>
+          <div class="tier-card-header">
+            <div class="tier-badge premium">PREMIUM</div>
+            <h3>Single Lab</h3>
+            <p class="scope-text">All Modules + Premium Features</p>
+          </div>
+          <ul class="feature-bullets">
+            <li><mat-icon>check_circle</mat-icon> All Starter Features</li>
+            <li><mat-icon>check_circle</mat-icon> Advanced Analytics & Charts</li>
+            <li><mat-icon>check_circle</mat-icon> WhatsApp & SMS Notifications</li>
+            <li><mat-icon>check_circle</mat-icon> Doctor Commission Tracking</li>
+            <li><mat-icon>check_circle</mat-icon> Custom Branding & Styling</li>
+            <li class="locked"><mat-icon>block</mat-icon> Multi-Branch Sync</li>
+          </ul>
+        </div>
+
+        <!-- ENTERPRISE TIER CARD -->
+        <div
+          class="tier-column-card enterprise"
+          [class.current]="usage()?.planCode === 'ENTERPRISE'"
+          [class.selected]="selectedPlanCode() === 'ENTERPRISE'"
+          (click)="selectedPlanCode.set('ENTERPRISE')"
+        >
+          <div class="tier-card-header">
+            <div class="tier-badge enterprise">ENTERPRISE</div>
+            <h3>Multiple Branches</h3>
+            <p class="scope-text">Centralized Multi-Branch Control</p>
+          </div>
+          <ul class="feature-bullets">
+            <li><mat-icon>check_circle</mat-icon> All Premium Features</li>
+            <li><mat-icon>check_circle</mat-icon> Multi-Branch Inventory</li>
+            <li><mat-icon>check_circle</mat-icon> Inter-Branch Transfer</li>
+            <li><mat-icon>check_circle</mat-icon> Cross-Branch Regional RBAC</li>
+            <li><mat-icon>check_circle</mat-icon> Centralized Admin Dashboard</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Volume Tier Selection Selector -->
+      <div class="volume-selector-section">
+        <h3>Select Volume Tier & Monthly Patient Limit:</h3>
+        <div class="volume-chips">
+          <div
+            class="volume-chip"
+            [class.active]="selectedVolumeCode() === 'VILLAGE'"
+            (click)="selectedVolumeCode.set('VILLAGE')"
+          >
+            <div class="vol-name">Village</div>
+            <div class="vol-limit">100 patients/mo</div>
+          </div>
+          <div
+            class="volume-chip"
+            [class.active]="selectedVolumeCode() === 'TOWN'"
+            (click)="selectedVolumeCode.set('TOWN')"
+          >
+            <div class="vol-name">Town</div>
+            <div class="vol-limit">500 patients/mo</div>
+          </div>
+          <div
+            class="volume-chip"
+            [class.active]="selectedVolumeCode() === 'CITY'"
+            (click)="selectedVolumeCode.set('CITY')"
+          >
+            <div class="vol-name">City</div>
+            <div class="vol-limit">5,000 patients/mo</div>
+          </div>
+          <div
+            class="volume-chip"
+            [class.active]="selectedVolumeCode() === 'METRO'"
+            (click)="selectedVolumeCode.set('METRO')"
+          >
+            <div class="vol-name">Metro City</div>
+            <div class="vol-limit">Unlimited patients/mo</div>
+          </div>
+        </div>
+
+        <div class="upgrade-action-bar">
+          <div class="selected-summary">
+            Selected Tier Assignment: <strong>{{ selectedPlanCode() }}</strong> + <strong>{{ selectedVolumeCode() }}</strong>
+          </div>
+          <button
+            mat-raised-button
+            color="primary"
+            class="upgrade-btn"
+            [disabled]="updating()"
+            (click)="upgradeSubscription()"
+          >
+            <mat-icon>bolt</mat-icon> Assign / Upgrade Subscription
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Access Matrix -->
+    <div class="section-card features-card">
+      <div class="section-header">
+        <mat-icon class="header-icon">checklist</mat-icon>
+        <div>
+          <h2>Active Feature Access Matrix</h2>
+          <p class="sub">Overview of enabled capabilities for selected client organization.</p>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <div
+          class="feature-tile"
+          *ngFor="let item of getFeatureKeys()"
+          [class.enabled]="usage()?.features?.[item.key]"
+        >
+          <mat-icon class="tile-icon">{{ item.icon }}</mat-icon>
+          <div class="tile-info">
+            <div class="tile-label">{{ item.label }}</div>
+            <div class="tile-status">
+              <span *ngIf="usage()?.features?.[item.key]" class="active-badge">
+                <mat-icon inline>check</mat-icon> Enabled
+              </span>
+              <span *ngIf="!usage()?.features?.[item.key]" class="locked-badge">
+                <mat-icon inline>lock</mat-icon> Upgrade Required
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

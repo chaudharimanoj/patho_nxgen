@@ -1,0 +1,55 @@
+<div class="space-y-6">
+  <!-- Welcome header -->
+  <div>
+    <h1 class="text-2xl font-semibold text-gray-900">
+      Welcome back, {{ authStore.username() }}
+    </h1>
+    <p class="mt-1 text-sm text-gray-500">
+      Tenant: <strong>{{ authStore.tenantSlug() }}</strong> &mdash; Here's what's happening today.
+    </p>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    @for (card of kpiCards; track card.label) {
+      <mat-card class="hover:shadow-md transition-shadow">
+        <mat-card-content class="flex items-start justify-between pt-4 pb-2">
+          <div>
+            <p class="text-sm font-medium text-gray-500">{{ card.label }}</p>
+            <p class="mt-1 text-3xl font-bold text-gray-900">{{ card.value }}</p>
+            <p class="mt-1 text-xs text-gray-400">{{ card.delta }} vs last week</p>
+          </div>
+          <mat-icon [class]="card.color + ' text-4xl opacity-80'">{{ card.icon }}</mat-icon>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+
+  <!-- Charts row -->
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <mat-card>
+      <mat-card-content>
+        <div echarts [options]="sampleStatusChartOptions" style="height: 280px;"></div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-content>
+        <div echarts [options]="weeklyTrendChartOptions" style="height: 280px;"></div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Quick links -->
+  <div class="flex gap-3 flex-wrap">
+    <a mat-raised-button color="primary" routerLink="/patients/new">
+      <mat-icon>person_add</mat-icon> Register Patient
+    </a>
+    <a mat-raised-button color="accent" routerLink="/samples/register">
+      <mat-icon>add_circle</mat-icon> Register Sample
+    </a>
+    <a mat-stroked-button routerLink="/samples/by-barcode">
+      <mat-icon>qr_code_scanner</mat-icon> Barcode Lookup
+    </a>
+  </div>
+</div>

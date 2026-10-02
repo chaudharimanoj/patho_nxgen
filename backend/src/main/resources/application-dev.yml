@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+logging:
+  level:
+    com.pathonxgen: DEBUG
+    org.hibernate.SQL: DEBUG

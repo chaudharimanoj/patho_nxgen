@@ -1,0 +1,61 @@
+<div class="flex flex-col h-full">
+  <!-- Header row -->
+  <div class="mb-4 flex items-center justify-between">
+    <h1 class="text-xl font-semibold text-gray-900">Patients</h1>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="navigateToRegister()"
+      id="btn-register-patient">
+      <mat-icon>person_add</mat-icon>
+      Register Patient
+    </button>
+  </div>
+
+  <!-- Search bar -->
+  <mat-form-field appearance="outline" class="max-w-md mb-4">
+    <mat-label>Search patients</mat-label>
+    <input
+      matInput
+      id="input-patient-search"
+      placeholder="Search by name or phone..."
+      (input)="onSearch($any($event.target).value)" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <!-- AG Grid -->
+  <div class="ag-theme-quartz flex-1" style="min-height: 400px;">
+    <ag-grid-angular
+      style="width: 100%; height: 500px;"
+      [rowData]="patientStore.patientList()"
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      [loading]="patientStore.loading()"
+      (rowDoubleClicked)="onRowDoubleClicked($event)"
+    />
+  </div>
+
+  <!-- Pagination -->
+  @if (patientStore.patients()) {
+    <div class="mt-3 flex items-center gap-3 text-sm text-gray-600">
+      <button
+        mat-stroked-button
+        [disabled]="currentPage() === 0"
+        (click)="previousPage()"
+        id="btn-prev-page">
+        Previous
+      </button>
+      <span>
+        Page {{ (patientStore.patients()?.page ?? 0) + 1 }} of
+        {{ patientStore.totalPages() < 1 ? 1 : patientStore.totalPages() }}
+      </span>
+      <button
+        mat-stroked-button
+        [disabled]="patientStore.isLastPage()"
+        (click)="nextPage()"
+        id="btn-next-page">
+        Next
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,78 @@
+<mat-sidenav-container class="h-screen">
+  <!-- Sidebar -->
+  <mat-sidenav
+    mode="side"
+    [opened]="!uiStore.sidebarCollapsed()"
+    class="w-60 border-r border-gray-200 bg-white">
+
+    <!-- Logo / Brand -->
+    <div class="px-4 py-5">
+      <span class="text-lg font-semibold text-brand-700">Patho NXGen</span>
+    </div>
+
+    <!-- Navigation -->
+    <mat-nav-list class="px-2">
+      @for (item of visibleNavItems(); track item.path) {
+        <a
+          mat-list-item
+          [routerLink]="item.path"
+          routerLinkActive="bg-brand-50 text-brand-700"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="rounded-md mb-1 text-gray-600 hover:bg-gray-100 transition-colors duration-150">
+          <mat-icon matListItemIcon class="mr-2">{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Main content area -->
+  <mat-sidenav-content class="flex flex-col bg-gray-50">
+    <!-- Topbar -->
+    <mat-toolbar class="border-b border-gray-200 bg-white shadow-sm flex items-center justify-between px-6 !min-h-14">
+      <button mat-icon-button (click)="uiStore.toggleSidebar()" aria-label="Toggle sidebar">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <div class="flex-1"></div>
+
+      <!-- Tenant badge -->
+      <div class="mr-4">
+        @if (authStore.tenantSlug() === 'platform') {
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold rounded-full shadow-sm">
+            <mat-icon class="!w-4 !h-4 !text-base">verified_user</mat-icon>
+            Platform Super Admin
+          </span>
+        } @else {
+          <span class="text-sm text-gray-500">
+            Tenant: <strong>{{ authStore.tenantSlug() }}</strong>
+          </span>
+        }
+      </div>
+
+      <!-- User menu -->
+      <button mat-button [matMenuTriggerFor]="userMenu" class="flex items-center gap-2">
+        <mat-icon>account_circle</mat-icon>
+        <span class="text-sm font-medium text-gray-700">{{ authStore.username() }}</span>
+        <mat-icon class="text-sm">arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item disabled>
+          <mat-icon>badge</mat-icon>
+          <span>{{ authStore.username() }}</span>
+        </button>
+        <mat-divider />
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <!-- Page content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

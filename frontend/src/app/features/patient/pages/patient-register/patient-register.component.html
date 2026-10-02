@@ -1,0 +1,92 @@
+<div class="max-w-xl">
+  <div class="mb-6 flex items-center gap-3">
+    <button mat-icon-button (click)="goBack()" aria-label="Go back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-xl font-semibold text-gray-900">Register Patient</h1>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+
+    <!-- Full Name -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Full Name</mat-label>
+      <input matInput formControlName="fullName" id="input-full-name" placeholder="Enter full name" />
+      @if (form.get('fullName')?.invalid && form.get('fullName')?.touched) {
+        <mat-error>Full name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- DOB + Gender row -->
+    <div class="grid grid-cols-2 gap-4">
+      <mat-form-field appearance="outline">
+        <mat-label>Date of Birth</mat-label>
+        <input matInput type="date" formControlName="dateOfBirth" id="input-dob" />
+        @if (form.get('dateOfBirth')?.invalid && form.get('dateOfBirth')?.touched) {
+          <mat-error>Date of birth is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Gender</mat-label>
+        <mat-select formControlName="gender" id="select-gender">
+          <mat-option value="MALE">Male</mat-option>
+          <mat-option value="FEMALE">Female</mat-option>
+          <mat-option value="OTHER">Other</mat-option>
+          <mat-option value="UNDISCLOSED">Prefer not to say</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Phone + Email row -->
+    <div class="grid grid-cols-2 gap-4">
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" id="input-phone" placeholder="Phone number" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" id="input-email" placeholder="Email address" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <mat-error>Invalid email address</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Address -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Address</mat-label>
+      <input matInput formControlName="address" id="input-address" placeholder="Street address" />
+    </mat-form-field>
+
+    <!-- Insurance + Corporate -->
+    <div class="grid grid-cols-2 gap-4">
+      <mat-form-field appearance="outline">
+        <mat-label>Insurance Provider</mat-label>
+        <input matInput formControlName="insuranceProvider" id="input-insurance" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Corporate Account Code</mat-label>
+        <input matInput formControlName="corporateAccountCode" id="input-corporate-code" />
+      </mat-form-field>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-3 pt-2">
+      <button mat-stroked-button type="button" (click)="goBack()" id="btn-cancel">Cancel</button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || patientStore.submitting()"
+        id="btn-submit-patient">
+        @if (patientStore.submitting()) {
+          <mat-spinner diameter="20" class="mr-2" />
+        }
+        Register Patient
+      </button>
+    </div>
+  </form>
+</div>

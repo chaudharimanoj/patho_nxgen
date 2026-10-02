@@ -1,0 +1,43 @@
+<div class="max-w-lg">
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold text-gray-900">Register New Sample</h1>
+    <p class="mt-2 text-sm text-gray-600">Register a new sample in the laboratory system</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Barcode</mat-label>
+      <input matInput formControlName="barcode" id="input-barcode" placeholder="Enter sample barcode" />
+      @if (form.get('barcode')?.invalid && form.get('barcode')?.touched) {
+        <mat-error>Barcode is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Patient ID</mat-label>
+      <input matInput formControlName="patientId" id="input-patient-id" placeholder="Enter patient ID" />
+      @if (form.get('patientId')?.invalid && form.get('patientId')?.touched) {
+        <mat-error>Patient ID is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Test Type</mat-label>
+      <input matInput formControlName="testType" id="input-test-type" placeholder="e.g. CBC, Histopathology" />
+      @if (form.get('testType')?.invalid && form.get('testType')?.touched) {
+        <mat-error>Test type is required</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="flex justify-between pt-2">
+      <button mat-stroked-button type="button" (click)="cancel()" id="btn-cancel">Cancel</button>
+      <button mat-raised-button color="primary" type="submit"
+        [disabled]="form.invalid || sampleStore.submitting()" id="btn-submit-sample">
+        @if (sampleStore.submitting()) {
+          <mat-spinner diameter="18" class="mr-2" />
+        }
+        Register Sample
+      </button>
+    </div>
+  </form>
+</div>

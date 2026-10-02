@@ -1,0 +1,103 @@
+@if (sampleStore.loading() && !sampleStore.selectedSample()) {
+  <div class="flex h-full items-center justify-center">
+    <mat-spinner diameter="48" />
+  </div>
+} @else if (sampleStore.selectedSample(); as sample) {
+  <div>
+    <!-- Header -->
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-semibold text-gray-900">Sample Details</h1>
+        <p class="mt-1 text-sm text-gray-500">
+          Barcode: <code class="rounded bg-gray-200 px-1 py-0.5">{{ sample.barcode }}</code>
+        </p>
+      </div>
+      <div class="flex gap-3">
+        <button mat-stroked-button (click)="goBack()" id="btn-back">Back to List</button>
+        @if (sampleStore.availableTransitions().length > 0) {
+          <button mat-raised-button color="primary" (click)="navigateToTransition()" id="btn-transition">
+            Transition Sample
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Content grid -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <!-- Sample info -->
+      <div class="lg:col-span-2 space-y-4">
+        <mat-card>
+          <mat-card-header><mat-card-title>Sample Information</mat-card-title></mat-card-header>
+          <mat-card-content class="pt-3">
+            <div class="space-y-2 text-sm">
+              <div class="flex"><span class="w-36 font-medium text-gray-500">Barcode:</span><span class="font-mono">{{ sample.barcode }}</span></div>
+              <div class="flex"><span class="w-36 font-medium text-gray-500">Patient ID:</span><span>{{ sample.patientId }}</span></div>
+              <div class="flex"><span class="w-36 font-medium text-gray-500">Test Type:</span><span>{{ sample.testType }}</span></div>
+              <div class="flex"><span class="w-36 font-medium text-gray-500">Created:</span><span>{{ sample.createdAt | date:'medium' }}</span></div>
+              <div class="flex"><span class="w-36 font-medium text-gray-500">Updated:</span><span>{{ sample.updatedAt | date:'medium' }}</span></div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-header><mat-card-title>Processing Status</mat-card-title></mat-card-header>
+          <mat-card-content class="pt-3 text-center py-4">
+            <span class="inline-block rounded-full px-3 py-1 text-sm font-medium"
+              [ngClass]="statusClass(sample.status)">
+              {{ sample.status }}
+            </span>
+          </mat-card-content>
+        </mat-card>
+
+        @if (sample.collectedBy || sample.verifiedBy || sample.approvedBy || sample.rejectionReason) {
+          <mat-card>
+            <mat-card-header><mat-card-title>Processing Details</mat-card-title></mat-card-header>
+            <mat-card-content class="pt-3">
+              <div class="space-y-2 text-sm">
+                @if (sample.collectedBy) {
+                  <div class="flex"><span class="w-36 font-medium text-gray-500">Collected By:</span><span>{{ sample.collectedBy }}</span></div>
+                }
+                @if (sample.verifiedBy) {
+                  <div class="flex"><span class="w-36 font-medium text-gray-500">Verified By:</span><span>{{ sample.verifiedBy }}</span></div>
+                }
+                @if (sample.approvedBy) {
+                  <div class="flex"><span class="w-36 font-medium text-gray-500">Approved By:</span><span>{{ sample.approvedBy }}</span></div>
+                }
+                @if (sample.rejectionReason) {
+                  <div class="flex"><span class="w-36 font-medium text-gray-500">Rejection Reason:</span><span class="text-red-600">{{ sample.rejectionReason }}</span></div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+
+      <!-- Available actions -->
+      <mat-card>
+        <mat-card-header><mat-card-title>Available Actions</mat-card-title></mat-card-header>
+        <mat-card-content class="pt-3">
+          @if (sampleStore.availableTransitions().length === 0) {
+            <p class="text-center text-sm text-gray-500 py-4">
+              No actions available for your role at this stage.
+            </p>
+          } @else {
+            <div class="space-y-3">
+              @for (t of sampleStore.availableTransitions(); track t.status) {
+                <button
+                  mat-stroked-button
+                  class="w-full text-left"
+                  [id]="'btn-transition-' + t.status"
+                  (click)="handleTransition(t.status, t.requiredRole)">
+                  <div class="flex w-full items-center justify-between">
+                    <span class="font-medium">{{ t.label }}</span>
+                    <span class="text-xs text-gray-500">{{ t.requiredRole }}</span>
+                  </div>
+                </button>
+              }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+}

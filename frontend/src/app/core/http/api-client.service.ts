@@ -1,0 +1,53 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+/**
+ * Typed HTTP client wrapper around Angular's HttpClient.
+ * Replaces the Axios apiClient from axiosClient.ts.
+ * Base URL is taken from environment.apiBaseUrl.
+ * JWT is injected via apiInterceptor (registered in appConfig).
+ */
+@Injectable({ providedIn: 'root' })
+export class ApiClientService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = environment.apiBaseUrl.replace(/\/+$/, '');
+
+  get<T>(path: string, params?: Record<string, string | number>): Observable<T> {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => {
+        httpParams = httpParams.set(k, String(v));
+      });
+    }
+    return this.http
+      .get<ApiResponse<T>>(`${this.baseUrl}${path}`, { params: httpParams })
+      .pipe(map((r) => r.data));
+  }
+
+  post<T>(path: string, body: unknown): Observable<T> {
+    return this.http
+      .post<ApiResponse<T>>(`${this.baseUrl}${path}`, body)
+      .pipe(map((r) => r.data));
+  }
+
+  put<T>(path: string, body: unknown): Observable<T> {
+    return this.http
+      .put<ApiResponse<T>>(`${this.baseUrl}${path}`, body)
+      .pipe(map((r) => r.data));
+  }
+
+  delete<T>(path: string): Observable<T> {
+    return this.http
+      .delete<ApiResponse<T>>(`${this.baseUrl}${path}`)
+      .pipe(map((r) => r.data));
+  }
+}

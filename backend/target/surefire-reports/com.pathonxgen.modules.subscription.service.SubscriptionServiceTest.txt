@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.pathonxgen.modules.subscription.service.SubscriptionServiceTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.603 s -- in com.pathonxgen.modules.subscription.service.SubscriptionServiceTest
